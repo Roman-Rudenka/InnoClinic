@@ -10,14 +10,26 @@ namespace Presentation.Controllers;
 [Route("api/auth")]
 public class AuthController(IUserService userService, ITokenService tokenService, IUserRepository userRepository) : ControllerBase
 {
-    [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
+    [HttpPost("register-patient")]
+    public async Task<IActionResult> RegisterPatient([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
     {
         var result = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, cancellationToken);
         if (!result.Succeeded)
             return BadRequest(result.Errors.Select(e => e.Description));
 
-        return Ok("User registered");
+        return Ok("Patient registered");
+    }
+
+    [HttpPost("register-doctor")]
+    public async Task<IActionResult> RegisterDoctor([FromBody] RegisterRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, cancellationToken);
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors.Select(e => e.Description));
+        }
+        return Ok("Doctor registered");
     }
 
     [HttpPost("login")]
@@ -96,6 +108,13 @@ public class AuthController(IUserService userService, ITokenService tokenService
         );
 
         return Ok("Token refreshed");
+    }
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("accessToken");
+        Response.Cookies.Delete("refreshToken");
+        return Ok(new { message = "log out successful" });
     }
 }
 
