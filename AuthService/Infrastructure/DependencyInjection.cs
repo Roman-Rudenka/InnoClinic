@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Domain.Models;
 using Infrastructure.Options;
+using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -29,7 +30,7 @@ public static class DependencyInjection
             .AddDefaultTokenProviders();
 
         
-        
+        services.AddScoped<IRoleSeeder, RoleSeeder>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
 

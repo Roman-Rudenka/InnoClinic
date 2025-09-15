@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-
 namespace Domain.Enums;
 
 public enum Roles
@@ -8,5 +6,3 @@ public enum Roles
      Doctor,
      Reception
 }
-
-public class UserRole : IdentityRole<Guid>;
