@@ -24,10 +24,10 @@ public interface ITokenService
     /// </summary>
     /// <param name="token"></param>
     /// <param name="cancellationToken"></param>
-    /// <returns>is token is valid (true/false)</returns>
+    /// <returns> valid token? (true/false)</returns>
     public ClaimsPrincipal? ValidateAccessToken(string token, CancellationToken cancellationToken);
     /// <summary>
-    /// checking refresh token if it us valid
+    /// checking refresh token if it is valid
     /// </summary>
     /// <param name="token"></param>
     /// <param name="userId"></param>

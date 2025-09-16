@@ -9,6 +9,6 @@ namespace Application.Interfaces;
 public interface IUserService
 {
     public Task<IdentityResult> RegisterUserAsync(string email, string password, string phoneNumber, Roles role,  CancellationToken cancellationToken); 
-    public Task<RefreshTokensDTO?> LoginAsync(string email, string password, CancellationToken cancellationToken);
-    public Task<RefreshTokensDTO> RefreshTokensAsync(RefreshTokensDTO request, CancellationToken cancellationToken); 
+    public Task<RefreshTokensDto?> LoginAsync(string email, string password, CancellationToken cancellationToken);
+    public Task<RefreshTokensDto> RefreshTokensAsync(RefreshTokensDto request, CancellationToken cancellationToken); 
 }

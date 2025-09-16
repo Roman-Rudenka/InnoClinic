@@ -1,0 +1,8 @@
+namespace Application.Options;
+
+public class ReceptionUserOptions
+{
+    public required string Email { get; init; }
+    public required string Password { get; init; }
+    public required string PhoneNumber { get; init; }
+}

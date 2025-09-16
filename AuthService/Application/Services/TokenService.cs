@@ -22,7 +22,9 @@ public class TokenService : ITokenService
         _tokenRepository = tokenRepository;
 
         if (string.IsNullOrWhiteSpace(_jwtOptions.Secret))
+        {
             throw new InvalidOperationException("JWT secret is missing in configuration.");
+        }
 
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
     }

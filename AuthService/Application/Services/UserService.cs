@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Application.AuthDTO;
+using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Enums;
 using Domain.Models;
@@ -7,25 +8,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services;
 
-public class UserService : IUserService
+public class UserService(
+    UserManager<User> userManager,
+    SignInManager<User> signInManager,
+    ITokenService tokenService,
+    IUserRepository userRepository)
+    : IUserService
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signInManager;
-    private readonly ITokenService _tokenService;
-    private readonly IUserRepository _userRepository;
-
-    public UserService(
-        UserManager<User> userManager,
-        SignInManager<User> signInManager,
-        ITokenService tokenService,
-        IUserRepository userRepository)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _tokenService = tokenService;
-        _userRepository = userRepository;
-    }
-
     public async Task<IdentityResult> RegisterUserAsync(string email, string password, string phoneNumber, Roles role, CancellationToken cancellationToken)
     {
         var user = new User
@@ -38,77 +27,77 @@ public class UserService : IUserService
             CreatedAt = DateTime.UtcNow
         };
 
-        var result = await _userManager.CreateAsync(user,password);
+        var result = await userManager.CreateAsync(user,password);
         if (!result.Succeeded)
         {
-            return null;
+            throw new BadRequestException("Invalid data");
         }
         
-        await _userManager.AddToRoleAsync(user, role.ToString());
+        await userManager.AddToRoleAsync(user, role.ToString());
         return result;
     }
 
-    public async Task<RefreshTokensDTO?> LoginAsync(string email, string password, CancellationToken cancellationToken)
+    public async Task<RefreshTokensDto?> LoginAsync(string email, string password, CancellationToken cancellationToken)
     {
-        var user = await _userManager.FindByEmailAsync(email);
+        var user = await userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            return null;
+            throw new NotFoundException("User not found");
         }
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+        var result = await signInManager.CheckPasswordSignInAsync(user, password, false);
         if (!result.Succeeded)
         {
-            return null;
+            throw new BadRequestException("Invalid password");
         }
 
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
-        var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
+        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
+        var refreshToken = await tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
 
-        return new RefreshTokensDTO()
+        return new RefreshTokensDto()
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
     }
     
-    public async Task<RefreshTokensDTO> RefreshTokensAsync(RefreshTokensDTO request, CancellationToken cancellationToken)
+    public async Task<RefreshTokensDto> RefreshTokensAsync(RefreshTokensDto request, CancellationToken cancellationToken)
     {
-        var principal = _tokenService.ValidateAccessToken(request.AccessToken, cancellationToken);
+        var principal = tokenService.ValidateAccessToken(request.AccessToken, cancellationToken);
         if (principal == null)
         {
-            return null;
+            throw new BadRequestException("Invalid token");
         }
     
         var userId = principal.FindFirstValue("id");
         if (userId == null || !Guid.TryParse(userId, out var guid))
         {
-            return null;
+            throw new BadRequestException("Invalid token");
         }
     
-        var isValid = await _tokenService.ValidateRefreshTokenAsync(request.RefreshToken, guid, cancellationToken);
+        var isValid = await tokenService.ValidateRefreshTokenAsync(request.RefreshToken, guid, cancellationToken);
         if (!isValid)
         {
-            return null;
+            throw new BadRequestException("Invalid token");
         }
     
-        await _tokenService.RevokeRefreshTokenAsync(request.RefreshToken, cancellationToken);
+        await tokenService.RevokeRefreshTokenAsync(request.RefreshToken, cancellationToken);
     
-        var user = await _userRepository.GetUserByIdAsync(guid, cancellationToken);
+        var user = await userRepository.GetUserByIdAsync(guid, cancellationToken);
         if (user == null)
         {
-            return null;
+            throw new NotFoundException("User not found");
         }
     
         return await GenerateTokensAsync(user, cancellationToken);
     }
     
-    private async Task<RefreshTokensDTO> GenerateTokensAsync(User user, CancellationToken cancellationToken)
+    private async Task<RefreshTokensDto> GenerateTokensAsync(User user, CancellationToken cancellationToken)
     {
-        var accessToken = _tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
-        var refreshToken = await _tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
+        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
+        var refreshToken = await tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
     
-        return new RefreshTokensDTO()
+        return new RefreshTokensDto()
         {
             AccessToken = accessToken,
             RefreshToken = refreshToken

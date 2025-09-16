@@ -1,7 +1,7 @@
 namespace Presentation.Requests;
 
-public record LoginRequest
+public record LoginRequest(string Email, string Password)
 {
-    public required string Email { get; init; }
-    public required string Password { get; set; }
+    public required string Email { get; init; } = Email;
+    public required string Password { get; init; } = Password;
 }

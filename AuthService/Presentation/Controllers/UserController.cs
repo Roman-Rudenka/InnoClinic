@@ -1,9 +1,7 @@
-using System.Security.Claims;
 using Application.AuthDTO;
 using Application.Interfaces;
 using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 using Presentation.Requests;
 
 namespace Presentation.Controllers;
@@ -11,16 +9,12 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IUserService userService, ITokenService tokenService) : ControllerBase
+public class AuthController(IUserService userService) : ControllerBase
 {
     [HttpPost("register-patient")]
     public async Task<IActionResult> RegisterPatient([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var result = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber,Roles.Patient, cancellationToken);
-        if (!result.Succeeded)
-        {
-            return BadRequest(result.Errors.Select(e => e.Description));
-        }
+        await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber,Roles.Patient, cancellationToken);
 
         return Ok("Patient registered");
     }
@@ -28,11 +22,8 @@ public class AuthController(IUserService userService, ITokenService tokenService
     [HttpPost("register-doctor")]
     public async Task<IActionResult> RegisterDoctor([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        var result = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Doctor,  cancellationToken);
-        if (!result.Succeeded)
-        {
-            return BadRequest(result.Errors.Select(e => e.Description));
-        }
+        await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Doctor,  cancellationToken);
+        
         return Ok("Doctor registered");
     }
 
@@ -40,7 +31,11 @@ public class AuthController(IUserService userService, ITokenService tokenService
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken = default)
     {
         var tokens = await userService.LoginAsync(request.Email, request.Password, cancellationToken);
-    
+        if (tokens?.AccessToken == null)
+        {
+            return Unauthorized();
+        }
+        
         Response.Cookies.Append("access_token", tokens.AccessToken, new CookieOptions
         {
             HttpOnly = true,
@@ -61,10 +56,10 @@ public class AuthController(IUserService userService, ITokenService tokenService
     }
     
     [HttpPost("refresh")]
-    public async Task<IActionResult> Refresh([FromBody] RefreshTokensDTO request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokensDto request, CancellationToken cancellationToken = default)
     {
         var tokens = await userService.RefreshTokensAsync(request, cancellationToken);
-        if (tokens == null)
+        if (string.IsNullOrEmpty(tokens.AccessToken) || string.IsNullOrEmpty(tokens.RefreshToken))
         {
             return Unauthorized("Invalid token pair");
         }
@@ -101,9 +96,6 @@ public class AuthController(IUserService userService, ITokenService tokenService
         return Ok(new { message = "log out successful" });
     }
 }
-
-
-
 
 
 
