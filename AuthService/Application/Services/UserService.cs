@@ -1,10 +1,15 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Application.AuthDTO;
 using Application.Exceptions;
 using Application.Interfaces;
+using Application.Options;
 using Domain.Enums;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
@@ -12,9 +17,12 @@ public class UserService(
     UserManager<User> userManager,
     SignInManager<User> signInManager,
     ITokenService tokenService,
-    IUserRepository userRepository)
+    IUserRepository userRepository,
+    IDistributedCache cache,
+    IOptions<RedisOptions> redisOptions)
     : IUserService
 {
+    private readonly RedisOptions _redisOptions = redisOptions.Value;
     public async Task<IdentityResult> RegisterUserAsync(string email, string password, string phoneNumber, Roles role, CancellationToken cancellationToken)
     {
         var user = new User
@@ -59,6 +67,27 @@ public class UserService(
             AccessToken = accessToken,
             RefreshToken = refreshToken
         };
+    }
+
+    public async Task LogoutAsync(ClaimsPrincipal user, CancellationToken cancellationToken)
+    {
+        var jti = user.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
+        var userId = user.FindFirst("id")?.Value;
+        
+        if (string.IsNullOrEmpty(jti) || string.IsNullOrEmpty(userId))
+        {
+            throw new BadRequestException("Invalid token");
+        }
+
+        var key = $"{_redisOptions.InstanceName}revoked:{jti}";
+
+        await cache.SetStringAsync(key, "true", new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(15)
+        }, cancellationToken);
+        var userIdGuid = Guid.Parse(userId);
+        
+        await tokenService.RevokeRefreshTokenByUserIdAsync(userIdGuid, cancellationToken);
     }
     
     public async Task<RefreshTokensDto> RefreshTokensAsync(RefreshTokensDto request, CancellationToken cancellationToken)

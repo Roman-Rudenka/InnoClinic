@@ -41,4 +41,11 @@ public interface ITokenService
     /// <param name="cancellationToken"></param>
     /// <returns>new token</returns>
     public Task RevokeRefreshTokenAsync(string token, CancellationToken cancellationToken);
+    /// <summary>
+    /// removing tokens after logout
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns> is removed (true/false)</returns>
+    public Task RevokeRefreshTokenByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 }

@@ -26,6 +26,15 @@ public class TokenRepository(AppDbContext context) : ITokenRepository
         }
     }
 
+    public async Task DeleteRefreshTokenByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var existing = await  context.RefreshTokens.FirstOrDefaultAsync(rt =>rt.UserId == userId, cancellationToken: cancellationToken);
+        if (existing != null)
+        {
+            context.RefreshTokens.Remove(existing);
+        }
+    }
+
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await context.SaveChangesAsync(cancellationToken);

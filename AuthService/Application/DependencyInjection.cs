@@ -13,6 +13,14 @@ public static class DependencyInjection
     { 
         services.Configure<JwtOptions>(configuration.GetSection("Jwt")); 
         services.Configure<ReceptionUserOptions>(configuration.GetSection("Reception"));
+        services.Configure<RedisOptions>(configuration.GetSection("Redis"));
+        
+        services.AddStackExchangeRedisCache(options =>
+        {
+            var redisConfig = configuration.GetSection("Redis").Get<RedisOptions>();
+            options.Configuration = redisConfig?.Configuration;
+            options.InstanceName = redisConfig?.InstanceName;
+        });
         
         services.AddScoped<IUserService, UserService>(); 
         services.AddScoped<ITokenService, TokenService>();

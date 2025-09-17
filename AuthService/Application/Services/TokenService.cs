@@ -7,6 +7,7 @@ using Application.Options;
 using Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 
 namespace Application.Services;
 
@@ -31,8 +32,11 @@ public class TokenService : ITokenService
 
     public string GenerateAccessToken(Guid userId, string email, CancellationToken cancellationToken = default)
     {
+        var jti = Guid.CreateVersion7();
+        
         var claims = new[]
         {
+            new Claim(JwtRegisteredClaimNames.Jti, jti.ToString()),
             new Claim("id", userId.ToString()),
             new Claim("email", email)
         };
@@ -95,5 +99,12 @@ public class TokenService : ITokenService
     public async Task RevokeRefreshTokenAsync(string token, CancellationToken cancellationToken = default)
     {
         await _tokenRepository.DeleteRefreshTokenAsync(token, cancellationToken);
+        await  _tokenRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RevokeRefreshTokenByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        await _tokenRepository.DeleteRefreshTokenByUserIdAsync(userId, cancellationToken);
+        await _tokenRepository.SaveChangesAsync(cancellationToken);
     }
 }

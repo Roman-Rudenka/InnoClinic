@@ -1,6 +1,7 @@
 using Application.AuthDTO;
 using Application.Interfaces;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Requests;
 
@@ -54,7 +55,7 @@ public class AuthController(IUserService userService) : ControllerBase
     
         return Ok("Logged in");
     }
-    
+    [Authorize]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokensDto request, CancellationToken cancellationToken = default)
     {
@@ -87,12 +88,14 @@ public class AuthController(IUserService userService) : ControllerBase
         return Ok("Token refreshed");
     }
 
-    
+    [Authorize]
     [HttpPost("logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> Logout(CancellationToken cancellationToken = default)
     {
-        Response.Cookies.Delete("accessToken");
-        Response.Cookies.Delete("refreshToken");
+        await userService.LogoutAsync(User, cancellationToken);
+        Response.Cookies.Delete("access_token");
+        Response.Cookies.Delete("refresh_token");
+        
         return Ok(new { message = "log out successful" });
     }
 }
