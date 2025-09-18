@@ -58,7 +58,9 @@ public class UserService(
             throw new BadRequestException("Invalid password");
         }
 
-        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
+        var roles = await userManager.GetRolesAsync(user);
+        
+        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, roles, cancellationToken);
         var refreshToken = await tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
 
         return new RefreshTokensDto()
@@ -122,7 +124,9 @@ public class UserService(
     
     private async Task<RefreshTokensDto> GenerateTokensAsync(User user, CancellationToken cancellationToken)
     {
-        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, cancellationToken);
+        var roles = await userManager.GetRolesAsync(user);
+        
+        var accessToken = tokenService.GenerateAccessToken(user.Id, user.Email!, roles, cancellationToken);
         var refreshToken = await tokenService.GenerateRefreshTokenAsync(user.Id, cancellationToken);
     
         return new RefreshTokensDto()

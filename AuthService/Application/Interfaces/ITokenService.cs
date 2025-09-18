@@ -9,9 +9,10 @@ public interface ITokenService
     /// </summary>
     /// <param name="userId"></param>
     /// <param name="email"></param>
+    /// <param name="roles"></param>
     /// <param name="cancellationToken"></param>
     /// <returns>access token</returns>
-    public string GenerateAccessToken(Guid userId, string email, CancellationToken cancellationToken);
+    public string GenerateAccessToken(Guid userId, string email, IEnumerable<string> roles, CancellationToken cancellationToken);
     /// <summary>
     /// generating refresh token for user
     /// </summary>

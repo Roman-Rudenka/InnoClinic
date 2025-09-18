@@ -29,17 +29,21 @@ public class TokenService : ITokenService
         _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Secret));
     }
 
-    public string GenerateAccessToken(Guid userId, string email, CancellationToken cancellationToken = default)
+    public string GenerateAccessToken(Guid userId, string email, IEnumerable<string> roles, CancellationToken cancellationToken = default)
     {
         var jti = Guid.CreateVersion7();
         
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Jti, jti.ToString()),
             new Claim("id", userId.ToString()),
             new Claim("email", email)
         };
-
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim("role6", role));
+        }
+        
         var token = new JwtSecurityToken(
             issuer: _jwtOptions.Issuer,
             audience: _jwtOptions.Audience,
