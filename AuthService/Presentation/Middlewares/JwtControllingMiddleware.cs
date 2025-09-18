@@ -21,17 +21,15 @@ public class JwtControllingMiddleware(
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Replace("Bearer ", "");
+        var token = context.Request.Cookies["access_token"];
 
-        if (string.IsNullOrWhiteSpace(token))
+        if (string.IsNullOrEmpty(token))
         {
             await next(context);
             return;
         }
-
         var handler = new JwtSecurityTokenHandler();
-        ClaimsPrincipal? principal;
-
+        ClaimsPrincipal?  principal;
         try
         {
             principal = handler.ValidateToken(token, new TokenValidationParameters
@@ -47,25 +45,25 @@ public class JwtControllingMiddleware(
         }
         catch (Exception ex)
         {
-            logger.LogWarning(ex, "Invalid JWT token");
-            throw new UnauthorizedException("Invalid token");
+            logger.LogWarning(ex, ex.Message);
+            throw new UnauthorizedException("access token is invalid");
         }
-
+        
         var jti = principal.FindFirst(JwtRegisteredClaimNames.Jti)?.Value;
-
+        
         if (!string.IsNullOrEmpty(jti))
         {
             var key = $"{_redisOptions.InstanceName}revoked:{jti}";
             var revoked = await cache.GetStringAsync(key);
-
+        
             if (revoked is not null)
             {
                 logger.LogInformation("Blocked request with revoked token: {Jti}", jti);
                 throw new UnauthorizedException("Token has been revoked");
             }
         }
-
+        
         context.User = principal;
-        await next(context);
+        await next(context); 
     }
 }

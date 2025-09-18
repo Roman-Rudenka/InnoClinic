@@ -52,9 +52,10 @@ public class AuthController(IUserService userService) : ControllerBase
             SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddDays(7)
         });
-    
+        
         return Ok("Logged in");
     }
+    
     [Authorize]
     [HttpPost("refresh")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokensDto request, CancellationToken cancellationToken = default)

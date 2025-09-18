@@ -15,16 +15,6 @@ public static class SwaggerConfiguration
                 Description = "AuthService API"
             });
             
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Type = SecuritySchemeType.Http,
-                Scheme = "Bearer",
-                BearerFormat = "JWT",
-                In = ParameterLocation.Header,
-                Description = "Bearer {your JWT token}"
-            });
-            
             options.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {

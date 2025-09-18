@@ -7,7 +7,6 @@ using Application.Options;
 using Domain.Models;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using StackExchange.Redis;
 
 namespace Application.Services;
 
@@ -54,7 +53,10 @@ public class TokenService : ITokenService
 
     public async Task<string> GenerateRefreshTokenAsync(Guid userId, CancellationToken cancellationToken = default)
     {
-        var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
+        var bytes = RandomNumberGenerator.GetBytes(64);
+        var base64 = Convert.ToBase64String(bytes);
+        
+        var token = base64.Replace("+", "-").Replace("/", "_").Replace("=", "");
 
         var refreshToken = new RefreshToken
         {
