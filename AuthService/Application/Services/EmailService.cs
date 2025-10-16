@@ -53,6 +53,7 @@ public class EmailService(IOptions<EmailOptions> emailOptions, IOptions<RedisOpt
 
         await cache.RemoveAsync(redisKey, cancellationToken);
         await repository.UpdateEmailStatusAsync(email, cancellationToken);
+        await repository.SaveChangesAsync(cancellationToken);
         return true;
     }
 }
