@@ -11,7 +11,7 @@ public class PatientService : IPatientService
     {
         _repository = repository;
     }
-    public async Task CreatePatientAsync(string  firstName, string lastName, string? middleName, DateOnly dateOfBirth)
+    public async Task CreatePatientAsync(string  firstName, string lastName, string? middleName, DateOnly dateOfBirth, CancellationToken cancellationToken)
     {
         var patient = new Patient
         {
@@ -21,40 +21,41 @@ public class PatientService : IPatientService
             BirthDate = dateOfBirth,
             IsLinkedToAccount = false
         };
-        await _repository.AddAsync(patient);
-        await _repository.SaveChangesAsync();
+        await _repository.AddAsync(patient, cancellationToken);
+        await _repository.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<Patient> GetPatientByidAsync(Guid id)
+    public async Task<Patient> GetPatientByidAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await  _repository.GetByIdAsync(id);
+        if (user == null)
+        {
+            throw new ApplicationException($"Patient  not found");
+        }
+        return user;
     }
 
-    public Task<IEnumerable<Patient>> GetPatientsAsync()
+    public async Task<IEnumerable<Patient>> GetPatientsAsync()
     {
-        throw new NotImplementedException();
+        var users = await _repository.GetAllAsync();
+        
+        return users;
     }
 
     public async Task UpdatePatientAsync(Guid id, string ? firstName, string? lastName, string? middleName, DateOnly? dateOfBirth)
     {
-        if (id == Guid.Empty)
-        {
-            throw new Exception("ID cannot be empty");
-        }
-        if(firstName == null)
-        var patient = new Patient
-        {
-            FirstName = firstName,
-            LastName = lastName,
-            MiddleName = middleName,
-            BirthDate = dateOfBirth,
-            IsLinkedToAccount = false
-        }
-        await _repository.UpdateAsync(id, firstName, lastName, middleName, dateOfBirth);
+
     }
 
-    public Task DeletePatientAsync()
+    public async Task<string> DeletePatientAsync(Guid id)
     {
-        throw new NotImplementedException();
+        var user = await _repository.GetByIdAsync(id);
+        if (user == null)
+        {
+            throw new ApplicationException($"Patient not found");
+        } 
+        _repository.DeleteAsync(user);
+        
+        return "User deleted";
     }
 }

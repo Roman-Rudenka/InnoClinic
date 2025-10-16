@@ -8,4 +8,5 @@ public class ProfileModel
     public string? MiddleName { get; set; }
     public bool IsLinkedToAccount { get; set; }
     public DateOnly BirthDate { get; set; }
+    //public Guid AccountId { get; set; }
 }

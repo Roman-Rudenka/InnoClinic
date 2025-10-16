@@ -4,43 +4,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common;
 
-public class ProfileRepository<T> : IProfileRepository<T> where T : ProfileModel
+public class ProfileRepository<T>(AppDbContext context, DbSet<T> dbSet) : IProfileRepository<T>
+    where T : ProfileModel
 {
-    protected readonly AppDbContext _context;
-    protected readonly DbSet<T> _dbSet;
-
-    public ProfileRepository(AppDbContext context)
+    public async  Task AddAsync(T profile,  CancellationToken cancellationToken)
     {
-        _context = context;
-    }
-    
-    public async  Task AddAsync(T profile)
-    {
-        await _context.AddAsync(profile);
+        await context.AddAsync(profile,  cancellationToken);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id , CancellationToken cancellationToken)
     {
-        return await _context.FindAsync<T>(id);
+        return await context.FindAsync<T>(id, cancellationToken);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _dbSet.ToListAsync();
+        return await dbSet.ToListAsync(cancellationToken);
     }
 
-    public void UpdateAsync(T profile)
-    {
-         _dbSet.Update(profile);
-    }
-
-    public void DeleteAsync(T profile)
-    {
-        _dbSet.Remove(profile);
-    }
-
-    public async Task SaveChangesAsync()
+    public async Task UpdateAsync(T profile, CancellationToken cancellationToken)
     { 
-        await _context.SaveChangesAsync();
+        dbSet.Update(profile);
+        await context.SaveChangesAsync(cancellationToken);
+        
+    }
+
+    public async Task  DeleteAsync(T profile, CancellationToken cancellationToken)
+    {
+        dbSet.Remove(profile);
+        await context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    { 
+        await context.SaveChangesAsync(cancellationToken);
     }
 }
