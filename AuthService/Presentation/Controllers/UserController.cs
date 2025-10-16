@@ -10,7 +10,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IUserService userService) : ControllerBase
+public class AuthController(IUserService userService, IEmailService emailService) : ControllerBase
 {
     [HttpPost("register-patient")]
     public async Task<IActionResult> RegisterPatient([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
@@ -98,6 +98,28 @@ public class AuthController(IUserService userService) : ControllerBase
         Response.Cookies.Delete("refresh_token");
         
         return Ok(new { message = "log out successful" });
+    }
+
+    [Authorize]
+    [HttpPost("confirm-email")]
+    public async Task<IActionResult> SendEmail([FromBody] ConfirmEmail request, CancellationToken cancellationToken = default)
+    { 
+        var code = new Random().Next(10000, 99999).ToString();
+        await emailService.SendConfirmationCodeAsync(request.Email, "Confirm you email", code, code, cancellationToken);
+        return Ok("Confirmation code sent to your email");
+    }
+    
+    [Authorize]
+    [HttpPost("verify-email")]
+    public async Task<IActionResult> VerifyEmail([FromQuery] string email, [FromBody] VerifyEmailRequest request, CancellationToken cancellationToken = default)
+    {
+        var success = await emailService.ConfirmEmailAsync(email, request.Code, cancellationToken);
+        if (!success)
+        {
+            return BadRequest("Invalid or expired code");
+        }
+
+        return Ok("Email confirmed");
     }
 }
 

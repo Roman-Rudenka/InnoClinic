@@ -25,4 +25,15 @@ public class UserRepository(AppDbContext context) : IUserRepository
     {
         await context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task<User> UpdateEmailStatusAsync(string email, CancellationToken cancellationToken)
+    {
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == email, cancellationToken);
+        if (user is null)
+        {
+            throw new NullReferenceException("User not found");
+        }
+        user.EmailConfirmed = true;
+        return user;
+    }
 }

@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.Configure<JwtOptions>(configuration.GetSection("Jwt")); 
         services.Configure<ReceptionUserOptions>(configuration.GetSection("Reception"));
         services.Configure<RedisOptions>(configuration.GetSection("Redis"));
+        services.Configure<EmailOptions>(configuration.GetSection("EmailSettings"));
         
         services.AddStackExchangeRedisCache(options =>
         {
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>(); 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ICreatingReceptionService, CreatingReceptionService>();
+        services.AddScoped<IEmailService, EmailService>();
         
         return services;
         
