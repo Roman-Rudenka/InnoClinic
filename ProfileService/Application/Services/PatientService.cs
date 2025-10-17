@@ -25,9 +25,9 @@ public class PatientService : IPatientService
         await _repository.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<Patient> GetPatientByidAsync(Guid id)
+    public async Task<Patient> GetPatientByidAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await  _repository.GetByIdAsync(id);
+        var user = await  _repository.GetByIdAsync(id, cancellationToken);
         if (user == null)
         {
             throw new ApplicationException($"Patient  not found");
@@ -35,26 +35,26 @@ public class PatientService : IPatientService
         return user;
     }
 
-    public async Task<IEnumerable<Patient>> GetPatientsAsync()
+    public async Task<IEnumerable<Patient>> GetPatientsAsync(CancellationToken cancellationToken)
     {
-        var users = await _repository.GetAllAsync();
+        var users = await _repository.GetAllAsync(cancellationToken);
         
         return users;
     }
 
-    public async Task UpdatePatientAsync(Guid id, string ? firstName, string? lastName, string? middleName, DateOnly? dateOfBirth)
+    public async Task UpdatePatientAsync(Guid id, string ? firstName, string? lastName, string? middleName, DateOnly? dateOfBirth, CancellationToken cancellationToken)
     {
 
     }
 
-    public async Task<string> DeletePatientAsync(Guid id)
+    public async Task<string> DeletePatientAsync(Guid id, CancellationToken cancellationToken)
     {
-        var user = await _repository.GetByIdAsync(id);
+        var user = await _repository.GetByIdAsync(id, cancellationToken);
         if (user == null)
         {
             throw new ApplicationException($"Patient not found");
         } 
-        _repository.DeleteAsync(user);
+        await _repository.DeleteAsync(user, cancellationToken);
         
         return "User deleted";
     }
