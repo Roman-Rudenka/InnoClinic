@@ -6,7 +6,7 @@ namespace Infrastructure.Persistence;
 
 public class RoleSeeder(RoleManager<IdentityRole<Guid>> roleManager) : IRoleSeeder
 {
-    public async Task SeedAsync(CancellationToken cancellationToken = default)
+    public async Task SeedAsync()
     {
         var allowedRoles = Enum.GetNames(typeof(Roles));
 

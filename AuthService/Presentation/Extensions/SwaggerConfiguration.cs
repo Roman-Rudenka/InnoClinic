@@ -14,21 +14,6 @@ public static class SwaggerConfiguration
                 Version = "v1",
                 Description = "AuthService API"
             });
-            
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference
-                        {
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer"
-                        }
-                    },
-                    Array.Empty<string>()
-                }
-            });
         });
     }
 }

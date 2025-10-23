@@ -1,33 +1,24 @@
-using Domain.Common;
+using Application.Exceptions;
 using Newtonsoft.Json;
 
 namespace Presentation.Middlewares;
 
-public class ApiExceptionMiddleware
+public class ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExceptionMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<ApiExceptionMiddleware> _logger;
-
-    public ApiExceptionMiddleware(RequestDelegate next, ILogger<ApiExceptionMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
-
     public async Task InvokeAsync(HttpContext context)
     {
         try
         {
-            await _next(context);
+            await next(context);
         }
-        catch (BaseExceptionHandler ex)
+        catch (BaseException ex)
         {
-            _logger.LogWarning("Unhandled exception {Message}", ex.Message);
+            logger.LogWarning("Unhandled exception {Message}", ex.Message);
             await HandleExceptionAsync(context, ex.StatusCode, ex.Message).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Unhandled server exception {Message}", ex.Message);
+            logger.LogError("Unhandled server exception {Message}", ex.Message);
             await HandleExceptionAsync(context, 500, "Server Error").ConfigureAwait(false);
         }
     }

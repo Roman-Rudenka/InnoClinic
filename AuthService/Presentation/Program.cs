@@ -10,7 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 
-
 Log.Logger = SerilogConfigurator.Configure().CreateLogger();
 builder.Host.UseSerilog();
 
@@ -49,7 +48,6 @@ app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ApiExceptionMiddleware>();
 
 app.UseAuthentication();
-app.UseMiddleware<JwtControllingMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -9,16 +9,16 @@ namespace Application;
 
 public static class DependencyInjection 
 { 
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration) 
+    public static void AddApplication(this IServiceCollection services, IConfiguration configuration) 
     { 
-        services.Configure<JwtOptions>(configuration.GetSection("Jwt")); 
-        services.Configure<ReceptionUserOptions>(configuration.GetSection("Reception"));
-        services.Configure<RedisOptions>(configuration.GetSection("Redis"));
-        services.Configure<EmailOptions>(configuration.GetSection("EmailSettings"));
+        services.AddOptionsWithValidation<JwtOptions>(configuration, JwtOptions.SectionName);
+        services.AddOptionsWithValidation<ReceptionUserOptions>(configuration, ReceptionUserOptions.SectionName);
+        services.AddOptionsWithValidation<RedisOptions>(configuration, RedisOptions.SectionName);
+        services.AddOptionsWithValidation<EmailOptions>(configuration, EmailOptions.SectionName);
         
         services.AddStackExchangeRedisCache(options =>
         {
-            var redisConfig = configuration.GetSection("Redis").Get<RedisOptions>();
+            var redisConfig = configuration.GetSection(RedisOptions.SectionName).Get<RedisOptions>();
             options.Configuration = redisConfig?.Configuration;
             options.InstanceName = redisConfig?.InstanceName;
         });
@@ -27,8 +27,12 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ICreatingReceptionService, CreatingReceptionService>();
         services.AddScoped<IEmailService, EmailService>();
-        
-        return services;
-        
+    }
+
+    public static void AddOptionsWithValidation<T>(this IServiceCollection services,
+        IConfiguration configuration, string sectionName) where T : class
+    {
+        services.AddOptions<T>().Bind(configuration.GetSection(sectionName)).ValidateDataAnnotations().ValidateOnStart();
     }
 }
+

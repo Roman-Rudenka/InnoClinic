@@ -1,3 +1,4 @@
+using Application;
 using Application.Interfaces;
 using Domain.Models;
 using Infrastructure.Options;
@@ -13,9 +14,9 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<DbOptions>(configuration.GetSection("ConnectionStrings"));
+        services.AddOptionsWithValidation<DbOptions>(configuration, DbOptions.SectionName);
 
         services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
@@ -28,12 +29,8 @@ public static class DependencyInjection
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
-
         
         services.AddScoped<IRoleSeeder, RoleSeeder>();
-        services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITokenRepository, TokenRepository>();
-
-        return services;
     }
 }
