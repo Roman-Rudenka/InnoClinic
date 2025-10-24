@@ -15,7 +15,6 @@ namespace Application.Services;
 
 public class UserService(
     UserManager<User> userManager,
-    SignInManager<User> signInManager,
     ITokenService tokenService,
     IEmailService emailService,
     IDistributedCache cache,
@@ -58,14 +57,12 @@ public class UserService(
             throw new NotFoundException("Invalid email or password");
         }
     
-        var result = await signInManager.CheckPasswordSignInAsync(user, password, false);
-        if (!result.Succeeded)
+        var isPasswordValid = await userManager.CheckPasswordAsync(user, password);
+        if (!isPasswordValid)
         {
             throw new NotFoundException("Invalid email or password");
         }
         
-        
-    
         return  await GenerateTokensAsync(user, cancellationToken);
     }
 
