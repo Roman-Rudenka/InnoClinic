@@ -21,12 +21,6 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<IRoleSeeder>();
-    await seeder.SeedAsync();
-}
-
-using (var scope = app.Services.CreateScope())
-{
     var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleSeeder>();
     await roleSeeder.SeedAsync();
 
