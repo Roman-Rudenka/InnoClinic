@@ -21,7 +21,7 @@ public class UserService(
     IOptions<RedisOptions> redisOptions)
     : IUserService
 {
-    public async Task<IdentityResult> RegisterUserAsync(string email, string password, string phoneNumber, Roles role, CancellationToken cancellationToken)
+    public async Task<User> RegisterUserAsync(string email, string password, string phoneNumber, Roles role, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -46,9 +46,9 @@ public class UserService(
         
         await emailService.SendEmailAsync(user.Email!, "Confirm your email (Resend)", confirmationLink, cancellationToken);
         
-        return result;
+        return user;
     }
-
+    
     public async Task<RefreshTokensDto?> LoginAsync(string email, string password, CancellationToken cancellationToken)
     {
         var user = await userManager.FindByEmailAsync(email);

@@ -15,6 +15,7 @@ public static class DependencyInjection
         services.AddOptionsWithValidation<ReceptionUserOptions>(configuration, ReceptionUserOptions.SectionName);
         services.AddOptionsWithValidation<RedisOptions>(configuration, RedisOptions.SectionName);
         services.AddOptionsWithValidation<EmailOptions>(configuration, EmailOptions.SectionName);
+        services.AddOptionsWithValidation<RabbitOptions>(configuration, RabbitOptions.SectionName);
         
         services.AddStackExchangeRedisCache(options =>
         {
@@ -27,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ICreatingReceptionService, CreatingReceptionService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IRabbitService, RabbitService>();
     }
 
     public static void AddOptionsWithValidation<T>(this IServiceCollection services,

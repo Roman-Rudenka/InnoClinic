@@ -17,4 +17,16 @@ public class ReceptionUserOptions
     [Required]
     [Phone]
     public required string PhoneNumber { get; init; }
+    
+    [Required]
+    public required string FirstName { get; init; }
+    
+    [Required]
+    public required string LastName { get; init; }
+    
+    [Required]
+    public string? MiddleName { get; init; }
+    
+    [Required]
+    public DateOnly DateOfBirth { get; init; }
 }

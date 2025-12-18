@@ -44,6 +44,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseMiddleware<CookieAuthMiddleware>();
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ApiExceptionMiddleware>();
 

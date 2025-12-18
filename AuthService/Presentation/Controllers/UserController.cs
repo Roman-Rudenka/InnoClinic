@@ -2,6 +2,7 @@ using Application.AuthDTO;
 using Application.Exceptions;
 using Application.Interfaces;
 using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Requests;
 
@@ -10,7 +11,7 @@ namespace Presentation.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-public class AuthController(IUserService userService) : ControllerBase
+public class AuthController(IUserService userService, IRabbitService rabbitService) : ControllerBase
 {
     private readonly CookieOptions _accessTokenCookieOptions = new()
     {
@@ -29,9 +30,12 @@ public class AuthController(IUserService userService) : ControllerBase
     };
     
     [HttpPost("register-patient")]
-    public async Task<IActionResult> RegisterPatient([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> RegisterPatient([FromBody] RegisterRequest request , CancellationToken cancellationToken = default)
     {
-        await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber,Roles.Patient, cancellationToken);
+        var user = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber,Roles.Patient, cancellationToken);
+        var userId =  user.Id;
+        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, userId);
+        await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Patient) , cancellationToken);
 
         return Created();
     }
@@ -39,7 +43,22 @@ public class AuthController(IUserService userService) : ControllerBase
     [HttpPost("register-doctor")]
     public async Task<IActionResult> RegisterDoctor([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
     {
-        await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Doctor,  cancellationToken);
+        var doctor = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Doctor,  cancellationToken);
+        var doctorId =  doctor.Id;
+        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, doctorId);
+        await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Doctor) , cancellationToken);
+        
+        return Created();
+    }
+
+    [HttpPost("register-reception")]
+    [Authorize (Roles = "reception")]
+    public async Task<IActionResult> RegisterReception([FromBody] RegisterRequest request, CancellationToken cancellationToken = default)
+    {
+        var reception = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Reception,  cancellationToken);
+        var receptionId =  reception.Id;
+        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, receptionId);
+        await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Reception) , cancellationToken);
         
         return Created();
     }
