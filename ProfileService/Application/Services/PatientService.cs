@@ -7,11 +7,11 @@ public class PatientService : IPatientService
 {
     private readonly IProfileRepository<Patient> _repository;
 
-    PatientService(IProfileRepository<Patient> repository)
+    public PatientService(IProfileRepository<Patient> repository)
     {
         _repository = repository;
     }
-    public async Task CreatePatientAsync(string  firstName, string lastName, string? middleName, DateOnly dateOfBirth, CancellationToken cancellationToken)
+    public async Task CreatePatientAsync(string  firstName, string lastName, string? middleName, DateOnly dateOfBirth, Guid accoutId, CancellationToken cancellationToken)
     {
         var patient = new Patient
         {
@@ -19,7 +19,8 @@ public class PatientService : IPatientService
             LastName = lastName,
             MiddleName = middleName,
             BirthDate = dateOfBirth,
-            IsLinkedToAccount = false
+            AccountId = accoutId,
+            IsLinkedToAccount = true
         };
         await _repository.AddAsync(patient, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);

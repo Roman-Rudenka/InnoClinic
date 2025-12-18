@@ -7,10 +7,12 @@ namespace Application;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
+    public static void AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<IPatientService, PatientService>();
+        services.Configure<RabbitOptions>(configuration.GetSection("Rabbit"));
         
-        return services;
+        
+        services.AddScoped<IPatientService, PatientService>();
+        services.AddHostedService<RabbitService>();
     }
 }
