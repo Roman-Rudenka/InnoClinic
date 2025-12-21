@@ -10,11 +10,11 @@ namespace Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static void AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<DbOptions>(options =>
         {
-            configuration.GetSection(nameof(DbOptions)).Bind(options);
+            configuration.GetSection(DbOptions.SectionName).Bind(options);
         });
         services.AddDbContext<AppDbContext>((serviceProvider, options) =>
         {
@@ -23,7 +23,6 @@ public static class DependencyInjection
         });
 
         services.AddScoped(typeof(IProfileRepository<>), typeof(ProfileRepository<>));
-        
-        return services;
+        //services.AddScoped<IPatientRepository, PatientRepository>();
     }
 }

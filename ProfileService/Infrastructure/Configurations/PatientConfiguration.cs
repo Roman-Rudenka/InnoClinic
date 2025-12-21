@@ -29,6 +29,9 @@ public class PatientConfiguration: IEntityTypeConfiguration<Patient>
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(p => p.AccountId)
+            .IsRequired();
+
         builder.ToTable("Patients");
     }
 }

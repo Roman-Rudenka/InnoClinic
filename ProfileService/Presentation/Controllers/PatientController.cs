@@ -18,13 +18,13 @@ public class PatientController
     }
     
     
-    [HttpPost]
-    [Route("create-account")]
-    public async Task<string> CreateAsync([FromBody] CreatePatientDto  patientDto, CancellationToken cancellationToken)
-    {
-        await _service.CreatePatientAsync(patientDto.FirstName, patientDto.LastName, patientDto.MiddleName, patientDto.DateOfBirth, cancellationToken);
-        return "patient created";
-    }
+    // [HttpPost]
+    // [Route("create-account")]
+    // public async Task<string> CreateAsync([FromBody] CreatePatientDto patientDto, CancellationToken cancellationToken)
+    // {
+    //     await _service.CreatePatientAsync(patientDto.FirstName, patientDto.LastName, patientDto.MiddleName, patientDto.DateOfBirth, cancellationToken);
+    //     return "patient created";
+    // }
 
     [HttpGet]
     [Route("get-patient/{id}")]
@@ -44,21 +44,20 @@ public class PatientController
         return patients;
     }
 
-    [HttpPut]
-    [Route("update-patient")]
-    public async Task UpdatePatientAsync(Guid id, [FromBody] UpdatePatientDto patientDto,CancellationToken cancellationToken)
-    {
-        await _service.UpdatePatientAsync(id, patientDto.FirstName, patientDto.LastName, patientDto.MiddleName,
-            patientDto.DateOfBirth, cancellationToken);
-    }
+    // [HttpPut]
+    // [Route("update-patient")]
+    // public async Task UpdatePatientAsync(Guid id, [FromBody] UpdatePatientDto patientDto,CancellationToken cancellationToken)
+    // {
+    //     await _service.UpdatePatientAsync(id, patientDto.FirstName, patientDto.LastName, patientDto.MiddleName,
+    //         patientDto.DateOfBirth, cancellationToken);
+    // }
 
-    [HttpDelete]
-    [Route("delete-patient")]
-    public async Task DeletePatientAsync(Guid  id, CancellationToken cancellationToken)
-    {
-        await _service.DeletePatientAsync(id, cancellationToken);
-    }
-    
+    // [HttpDelete]
+    // [Route("delete-patient")]
+    // public async Task DeletePatientAsync(Guid  id, CancellationToken cancellationToken)
+    // {
+    //     await _service.DeletePatientAsync(id, cancellationToken);
+    // }
 }
 
 
