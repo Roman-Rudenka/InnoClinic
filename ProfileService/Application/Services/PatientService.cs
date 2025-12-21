@@ -43,10 +43,10 @@ public class PatientService : IPatientService
         return users;
     }
 
-    public async Task UpdatePatientAsync(Guid id, string ? firstName, string? lastName, string? middleName, DateOnly? dateOfBirth, CancellationToken cancellationToken)
-    {
-
-    }
+    // public async Task UpdatePatientAsync(Guid id, string ? firstName, string? lastName, string? middleName, DateOnly? dateOfBirth, CancellationToken cancellationToken)
+    // {
+    //
+    // }
 
     public async Task<string> DeletePatientAsync(Guid id, CancellationToken cancellationToken)
     {

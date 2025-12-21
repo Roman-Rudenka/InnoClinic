@@ -11,7 +11,6 @@ public static class DependencyInjection
     {
         services.Configure<RabbitOptions>(configuration.GetSection("Rabbit"));
         
-        
         services.AddScoped<IPatientService, PatientService>();
         services.AddHostedService<RabbitService>();
     }

@@ -44,13 +44,13 @@ public class PatientController
         return patients;
     }
 
-    [HttpPut]
-    [Route("update-patient")]
-    public async Task UpdatePatientAsync(Guid id, [FromBody] UpdatePatientDto patientDto,CancellationToken cancellationToken)
-    {
-        await _service.UpdatePatientAsync(id, patientDto.FirstName, patientDto.LastName, patientDto.MiddleName,
-            patientDto.DateOfBirth, cancellationToken);
-    }
+    // [HttpPut]
+    // [Route("update-patient")]
+    // public async Task UpdatePatientAsync(Guid id, [FromBody] UpdatePatientDto patientDto,CancellationToken cancellationToken)
+    // {
+    //     await _service.UpdatePatientAsync(id, patientDto.FirstName, patientDto.LastName, patientDto.MiddleName,
+    //         patientDto.DateOfBirth, cancellationToken);
+    // }
 
     // [HttpDelete]
     // [Route("delete-patient")]
