@@ -70,4 +70,11 @@ public class OfficeController(IOfficeService officeService) : ControllerBase
 
         return Ok(office);
     }
+    
+    [HttpGet("by-address")]
+    public async Task<IActionResult> GetOfficeByAddress([FromQuery] string address, CancellationToken cancellationToken)
+    {
+        var office = await officeService.GetOfficeByAddressAsync(address, cancellationToken);
+        return Ok(office);
+    }
 }

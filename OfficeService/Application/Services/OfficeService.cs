@@ -88,4 +88,14 @@ public class OfficeService :  IOfficeService
     {
         office.IsActive = false;
     }
+    
+    public async Task<Office> GetOfficeByAddressAsync(string address, CancellationToken cancellationToken = default)
+    {
+        var office = await _officeRepository.GetByAddressAsync(address, cancellationToken);
+        if (office == null)
+        {
+            throw new KeyNotFoundException($"Office with address '{address}' not found");
+        }
+        return office;
+    }
 }

@@ -3,11 +3,9 @@ using Domain.Models;
 namespace Application.Interfaces;
 
 public interface IReceptionService
-{
-    public Task CreateReceptionAsync(string firstName, string lastName, string? middleName, DateOnly birthDate,
-        Guid accountId, CancellationToken cancellationToken);
-    public Task<Receptionist>  GetReceptionByIdAsync(Guid id, CancellationToken cancellationToken);
-    public Task<Receptionist> UpdateReceptionAsync(string firstName, string lastName, string? middleName, DateOnly birthDate,
-        Guid accountId, CancellationToken cancellationToken);
-    public Task DeleteReceptionAsync(Guid id, CancellationToken cancellationToken);
+{ 
+    Task CreateReceptionAsync(string firstName, string lastName, string? middleName, DateOnly birthDate, Guid accountId, Guid officeAddress, CancellationToken cancellationToken);
+    Task<Receptionist> GetReceptionByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task UpdateReceptionAsync(Guid id, string firstName, string lastName, string? middleName, DateOnly birthDate, CancellationToken cancellationToken);
+    Task DeleteReceptionAsync(Guid id, CancellationToken cancellationToken);
 }

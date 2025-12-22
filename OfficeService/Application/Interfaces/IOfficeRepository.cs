@@ -10,4 +10,5 @@ public interface IOfficeRepository
     public Task<Office> UpdateAddressAsync(Office office, CancellationToken cancellationToken = default);
     public Task RemoveAddressAsync(Guid id, CancellationToken cancellationToken = default);
     public Task SaveChangesAsync(CancellationToken cancellationToken = default);
+    public Task<Office?> GetByAddressAsync(string address, CancellationToken cancellationToken = default);
 }

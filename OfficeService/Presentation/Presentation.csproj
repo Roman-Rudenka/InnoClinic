@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Presentattion</RootNamespace>
+        <UserSecretsId>0941f939-42d4-47c3-a135-6504ff1bbe3b</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>

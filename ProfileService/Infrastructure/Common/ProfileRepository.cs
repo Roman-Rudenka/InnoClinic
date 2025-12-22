@@ -4,35 +4,34 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Common;
 
-public class ProfileRepository<T>(AppDbContext context, DbSet<T> dbSet) : IProfileRepository<T>
+public class ProfileRepository<T>(AppDbContext context) : IProfileRepository<T>
     where T : ProfileModel
 {
-    public async  Task AddAsync(T profile,  CancellationToken cancellationToken)
+    public async Task AddAsync(T profile, CancellationToken cancellationToken)
     {
-        await context.AddAsync(profile,  cancellationToken);
+        await context.Set<T>().AddAsync(profile, cancellationToken);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id , CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return await context.FindAsync<T>(id, cancellationToken);
+        return await context.Set<T>().FindAsync(id, cancellationToken);
     }
 
     public async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await dbSet.ToListAsync(cancellationToken);
+        return await context.Set<T>().ToListAsync(cancellationToken);
     }
 
-    public async Task UpdateAsync(T profile, CancellationToken cancellationToken)
+    public Task UpdateAsync(T profile, CancellationToken cancellationToken)
     { 
-        dbSet.Update(profile);
-        await context.SaveChangesAsync(cancellationToken);
-        
+        context.Set<T>().Update(profile);
+        return Task.CompletedTask;
     }
 
-    public async Task  DeleteAsync(T profile, CancellationToken cancellationToken)
+    public Task  DeleteAsync(T profile, CancellationToken cancellationToken)
     {
-        dbSet.Remove(profile);
-        await context.SaveChangesAsync(cancellationToken);
+        context.Set<T>().Remove(profile);
+        return Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

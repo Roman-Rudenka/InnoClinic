@@ -12,4 +12,5 @@ public interface IOfficeService
     public Task RemoveOfficeAsync(Guid id, CancellationToken cancellationToken = default);
     public void ChangeOfficeStatusToIsActive(Office office);
     public void ChangeOfficeStatusToIsNotActive(Office office);
+    Task<Office> GetOfficeByAddressAsync(string address, CancellationToken cancellationToken);
 }

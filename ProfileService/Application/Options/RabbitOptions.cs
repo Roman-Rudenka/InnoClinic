@@ -1,4 +1,4 @@
-namespace Application.Interfaces;
+namespace Application.Options;
 
 public class RabbitOptions
 {

@@ -5,36 +5,29 @@ using Microsoft.AspNetCore.Mvc;
 namespace Presentation.Controllers;
 
 [ApiController]
-[Route("api/patients")]
-public class PatientController(IPatientService patientService) : ControllerBase
+[Route("api/receptionists")]
+public class ReceptionController(IReceptionService receptionService) : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken ct)
-    {
-        var result = await patientService.GetPatientsAsync(ct);
-        return Ok(result);
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         try
         {
-            var result = await patientService.GetPatientByidAsync(id, ct);
+            var result = await receptionService.GetReceptionByIdAsync(id, ct);
             return Ok(result);
         }
         catch (KeyNotFoundException)
         {
-            return NotFound($"Patient not found.");
+            return NotFound();
         }
     }
-    
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] ProfileDataDto dto, CancellationToken ct)
     {
         try
         {
-            await patientService.UpdatePatientAsync(id, dto.FirstName, dto.LastName, dto.MiddleName, dto.DateOfBirth, ct);
+            await receptionService.UpdateReceptionAsync(id, dto.FirstName, dto.LastName, dto.MiddleName, dto.DateOfBirth, ct);
             return NoContent();
         }
         catch (KeyNotFoundException)
@@ -48,7 +41,7 @@ public class PatientController(IPatientService patientService) : ControllerBase
     {
         try
         {
-            await patientService.DeletePatientAsync(id, ct);
+            await receptionService.DeleteReceptionAsync(id, ct);
             return NoContent();
         }
         catch (KeyNotFoundException)

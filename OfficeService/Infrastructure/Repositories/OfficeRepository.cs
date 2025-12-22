@@ -31,16 +31,23 @@ public class OfficeRepository(AppDbContext context) : IOfficeRepository
 
     public async Task RemoveAddressAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var result = await context.Offices.FindAsync(id, cancellationToken);
-        if (result is not null)
+        var office = await context.Offices.FirstOrDefaultAsync(o => o.Id == id, cancellationToken);
+        if (office == null)
         {
-            context.Offices.Remove(result);
+            throw new ApplicationException("Office not found");
         }
-        throw new ApplicationException("Office not found");
+        context.Offices.Remove(office);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await context.SaveChangesAsync(cancellationToken);
+    }
+    
+    public async Task<Office?> GetByAddressAsync(string address, CancellationToken cancellationToken = default)
+    {
+        return await context.Offices
+            .AsNoTracking()
+            .FirstOrDefaultAsync(o => o.Address == address, cancellationToken);
     }
 }

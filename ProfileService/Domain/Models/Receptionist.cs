@@ -4,5 +4,5 @@ namespace Domain.Models;
 
 public class Receptionist : ProfileModel
 {
-  //  public Guid OfficeId { get; init; }
+    public Guid OfficeId { get; init; }
 }

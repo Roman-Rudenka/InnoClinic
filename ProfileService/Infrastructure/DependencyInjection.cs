@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Infrastructure.Common;
 using Infrastructure.Options;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +22,12 @@ public static class DependencyInjection
             var dbOptions = serviceProvider.GetRequiredService<IOptions<DbOptions>>().Value;
             options.UseNpgsql(dbOptions.DefaultConnection);
         });
-
+        
         services.AddScoped(typeof(IProfileRepository<>), typeof(ProfileRepository<>));
-        //services.AddScoped<IPatientRepository, PatientRepository>();
+        
+        services.AddScoped<IPatientRepository, PatientRepository>();
+        services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IReceptionRepository, ReceptionRepository>();
+        services.AddScoped<ISpecializationRepository, SpecializationRepository>();
     }
 }

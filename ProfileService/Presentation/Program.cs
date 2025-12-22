@@ -1,13 +1,7 @@
-
-
-
 using Application;
-using Application.Interfaces;
 using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<RabbitOptions>(builder.Configuration.GetSection("Rabbit"));
 
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);

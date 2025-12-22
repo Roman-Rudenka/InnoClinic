@@ -4,11 +4,10 @@ namespace Application.Interfaces;
 
 public interface IDoctorService
 {
-    public Task CreateDoctorAsync (string  firstName, string lastName, string? middleName,DateOnly birthDate, Guid accountId,Guid specializationId, DateOnly startWorkDate,  CancellationToken cancellationToken);
-    public Task<Doctor> GetDoctorByIdAsync();
-    public Task<Doctor> GetDoctorByNameAsync(string? firstName, string? lastName, string? middleName, CancellationToken cancellationToken);
-    public Task<IEnumerable<Doctor>> GetDoctorsBySpecialisationAsync(string specialisation, CancellationToken cancellationToken);
-    public Task<IEnumerable<Doctor>> GetDoctorsAsync (CancellationToken cancellationToken);
-    public Task UpdateDoctorAsync(Doctor doctor);
-    public Task DeleteDoctorAsync(Doctor doctor);
+    Task CreateDoctorAsync(string firstName, string lastName, string? middleName, DateOnly birthDate, Guid accountId, Guid specializationId, Guid officeId, DateOnly startWorkDate, CancellationToken ct);    
+    Task<Doctor> GetDoctorByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<IEnumerable<Doctor>> GetDoctorsBySpecialisationAsync(string specialisationName, CancellationToken cancellationToken);
+    Task<IEnumerable<Doctor>> GetDoctorsAsync(CancellationToken cancellationToken);
+    Task UpdateDoctorAsync(Doctor doctor, CancellationToken cancellationToken);
+    Task DeleteDoctorAsync(Guid id, CancellationToken cancellationToken);
 }
