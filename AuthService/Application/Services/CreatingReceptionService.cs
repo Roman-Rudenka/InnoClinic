@@ -33,7 +33,7 @@ public class CreatingReceptionService(UserManager<User> userManager, IOptions<Re
 
         await userManager.AddToRoleAsync(user, nameof(Roles.Reception));
 
-        var profileDto = new ProfileDataDto(
+        var profileDto = new ProfileDataRabbit(
             options.Value.FirstName, 
             options.Value.LastName, 
             options.Value.MiddleName, 

@@ -4,5 +4,5 @@ namespace Application.Interfaces;
 
 public interface IRabbitService
 {
-    public Task CreateUserProfileAsync(ProfileDataDto pofileData, string role,  CancellationToken cancellationToken);
+    public Task CreateUserProfileAsync(ProfileDataRabbit pofileData, string role,  CancellationToken cancellationToken);
 }

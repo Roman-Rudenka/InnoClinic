@@ -57,7 +57,7 @@ public class RabbitService(
         consumer.ReceivedAsync += async (ch, ea) =>
         {
             var body = Encoding.UTF8.GetString(ea.Body.ToArray());
-
+            
             try
             {
                 var profileData = JsonSerializer.Deserialize<ProfileDataDto>(body);
@@ -83,34 +83,24 @@ public class RabbitService(
 
                         case "user.created.doctor":
                             var doctorService = scope.ServiceProvider.GetRequiredService<IDoctorService>();
-
-                            if (string.IsNullOrEmpty(profileData.SpecializationName) || string.IsNullOrEmpty(profileData.OfficeAddress))
-                                throw new InvalidDataException("Doctor data missing Spec or Address");
-                            
-                            var specId = await resolver.ResolveSpecializationIdAsync(profileData.SpecializationName, stoppingToken);
-                            var docOfficeId = await resolver.ResolveOfficeIdAsync(profileData.OfficeAddress, stoppingToken);
                             
                             await doctorService.CreateDoctorAsync(
                                 profileData.FirstName, profileData.LastName, profileData.MiddleName,
-                                profileData.DateOfBirth, profileData.AccountId,
-                                specId,
-                                docOfficeId,
+                                profileData.DateOfBirth, profileData.AccountId, 
+                                Guid.NewGuid(),
+                                Guid.NewGuid(),
                                 profileData.StartWorkDate ?? DateOnly.FromDateTime(DateTime.Now),
                                 stoppingToken);
                             break;
 
                         case "user.created.reception":
                             var receptionService = scope.ServiceProvider.GetRequiredService<IReceptionService>();
-
-                            if (string.IsNullOrEmpty(profileData.OfficeAddress))
-                                throw new InvalidDataException("Reception data missing Office Address");
                             
-                            var recOfficeId = await resolver.ResolveOfficeIdAsync(profileData.OfficeAddress, stoppingToken);
                             
                             await receptionService.CreateReceptionAsync(
                                 profileData.FirstName, profileData.LastName, profileData.MiddleName,
                                 profileData.DateOfBirth, profileData.AccountId,
-                                recOfficeId,
+                                Guid.NewGuid(),
                                 stoppingToken);
                             break;
                     }

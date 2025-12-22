@@ -34,7 +34,7 @@ public class AuthController(IUserService userService, IRabbitService rabbitServi
     {
         var user = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber,Roles.Patient, cancellationToken);
         var userId =  user.Id;
-        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, userId);
+        var profileDataInput = new ProfileDataRabbit(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, userId);
         await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Patient) , cancellationToken);
 
         return Created();
@@ -45,7 +45,7 @@ public class AuthController(IUserService userService, IRabbitService rabbitServi
     {
         var doctor = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Doctor,  cancellationToken);
         var doctorId =  doctor.Id;
-        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, doctorId);
+        var profileDataInput = new ProfileDataRabbit(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, doctorId);
         await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Doctor) , cancellationToken);
         
         return Created();
@@ -57,7 +57,7 @@ public class AuthController(IUserService userService, IRabbitService rabbitServi
     {
         var reception = await userService.RegisterUserAsync(request.Email, request.Password, request.PhoneNumber, Roles.Reception,  cancellationToken);
         var receptionId =  reception.Id;
-        var profileDataInput = new ProfileDataDto(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, receptionId);
+        var profileDataInput = new ProfileDataRabbit(request.FirstName, request.LastName, request.MiddleName, request.DateOfBirth, receptionId);
         await rabbitService.CreateUserProfileAsync(profileDataInput, nameof(Roles.Reception) , cancellationToken);
         
         return Created();

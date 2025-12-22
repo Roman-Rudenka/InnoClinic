@@ -10,7 +10,7 @@ namespace Application.Services;
 
 public class RabbitService(IOptions<RabbitOptions> rabbitOptions) : IRabbitService
 {
-    public async Task CreateUserProfileAsync(ProfileDataDto profileData, string role, CancellationToken cancellationToken)
+    public async Task CreateUserProfileAsync(ProfileDataRabbit profileData, string role, CancellationToken cancellationToken)
     {
         var factory = new ConnectionFactory() 
         { 
